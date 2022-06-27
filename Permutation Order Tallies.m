@@ -63,6 +63,10 @@ CombineOrbitTallies[t1_,t2_]:=GatherTallySorted[{LCM[#[[1,1]],#[[2,1]]],#[[1,2]]
 
 
 (* ::Input:: *)
+(*tally3x3x3[[All,2]]//Total*)
+
+
+(* ::Input:: *)
 (*Export[FileNameJoin[{NotebookDirectory[],"permutation-order-tally-3x3x3.csv"}],tally3x3x3]*)
 
 
@@ -71,7 +75,7 @@ CombineOrbitTallies[t1_,t2_]:=GatherTallySorted[{LCM[#[[1,1]],#[[2,1]]],#[[1,2]]
 
 
 (* ::Input:: *)
-(*tallyMegaminx//Total*)
+(*tallyMegaminx[[All,2]]//Total*)
 
 
 (* ::Input:: *)
