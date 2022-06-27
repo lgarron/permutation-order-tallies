@@ -18,7 +18,7 @@ Take[CyclePossibilities[n,o],Position[CyclePossibilities[n,o],last][[1,1]]]
 
 
 (* ::Input::Initialization:: *)
-CyclePatterns[0,_,_]={{}}
+CyclePatterns[0,_,_]={{}};
 CyclePatterns[n_,o_,last_:Null]:=CyclePatterns[n,o,last]=Flatten[Table[Table[Catenate[{{first},rest}],{rest,CyclePatterns[n-first[[1]],o,first]}],{first,CyclePossibilitiesUpToLast[n,o,last]}],1]
 
 
