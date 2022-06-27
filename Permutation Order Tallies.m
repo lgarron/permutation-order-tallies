@@ -4,6 +4,10 @@
 (*Permutation Puzzle Position Order Tallies*)
 
 
+(* ::Subsection:: *)
+(*Initialization*)
+
+
 (* ::Input::Initialization:: *)
 CyclePossibilities[n_,o_]:=CyclePossibilities[n,o]=Flatten[Table[{i,twist},{i,n},{twist,0,o-1}],1]
 
@@ -64,6 +68,10 @@ CombineOrbitMultiTallies[l_]:=GatherTallySorted@Catenate[CombineOrbitTallies/@l]
 (*Puzzles*)
 
 
+(* ::Subsection:: *)
+(*3x3x3*)
+
+
 (* ::Input:: *)
 (*tally3x3x3=CombineOrbitMultiTallies[{*)
 (*{{12,2,0}, {8,3,0}},*)
@@ -79,6 +87,10 @@ CombineOrbitMultiTallies[l_]:=GatherTallySorted@Catenate[CombineOrbitTallies/@l]
 (*Export[FileNameJoin[{NotebookDirectory[],"permutation-order-tally-3x3x3.csv"}],tally3x3x3]*)
 
 
+(* ::Subsection:: *)
+(*Megaminx*)
+
+
 (* ::Input:: *)
 (*tallyMegaminx=CombineOrbitTallies[{{20,3,0}, {30,2,0}}];*)
 
@@ -89,6 +101,10 @@ CombineOrbitMultiTallies[l_]:=GatherTallySorted@Catenate[CombineOrbitTallies/@l]
 
 (* ::Input:: *)
 (*Export[FileNameJoin[{NotebookDirectory[],"permutation-order-tally-megaminx.csv"}],tallyMegaminx]*)
+
+
+(* ::Subsection:: *)
+(*4x4x4 Supercube*)
 
 
 (* ::Input:: *)
