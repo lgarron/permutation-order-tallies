@@ -5,12 +5,10 @@
 
 
 (* ::Input::Initialization:: *)
-Clear[CyclePossibilities]
 CyclePossibilities[n_,o_]:=CyclePossibilities[n,o]=Flatten[Table[{i,twist},{i,n},{twist,0,o-1}],1]
 
 
 (* ::Input::Initialization:: *)
-Clear[CyclePossibilitiesUpToLast]
 CyclePossibilitiesUpToLast[n_,o_,Null]:=CyclePossibilities[n,o]
 CyclePossibilitiesUpToLast[n_,o_,last_]:=CyclePossibilitiesUpToLast[n,o,last]=If[
 n<last[[1]],
@@ -20,7 +18,6 @@ Take[CyclePossibilities[n,o],Position[CyclePossibilities[n,o],last][[1,1]]]
 
 
 (* ::Input::Initialization:: *)
-Clear[CyclePatterns]
 CyclePatterns[0,_,_]={{}}
 CyclePatterns[n_,o_,last_:Null]:=CyclePatterns[n,o,last]=Flatten[Table[Table[Catenate[{{first},rest}],{rest,CyclePatterns[n-first[[1]],o,first]}],{first,CyclePossibilitiesUpToLast[n,o,last]}],1]
 
