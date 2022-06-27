@@ -55,11 +55,15 @@ CycleTalliesWithPermParity[n_,o_,p_]:=GatherTallySorted[{CyclePatternOrder[n,o][
 
 
 (* ::Input::Initialization:: *)
-CombineOrbitTallies[t1_,t2_]:=GatherTallySorted[{LCM[#[[1,1]],#[[2,1]]],#[[1,2]]*#[[2,2]]}&/@Tuples[{t1,t2}]]
+CombineOrbitTallies[l_]:=GatherTallySorted[{LCM@@#[[All,1]],Times@@#[[All,2]]}&/@Tuples[CycleTalliesWithPermParity@@#&/@l]]
+CombineOrbitMultiTallies[l_]:=GatherTallySorted@Catenate[CombineOrbitTallies/@l]
 
 
 (* ::Input:: *)
-(*tally3x3x3=Catenate[{CombineOrbitTallies[CycleTalliesWithPermParity[12,2,0],CycleTalliesWithPermParity[8,3,0]],CombineOrbitTallies[CycleTalliesWithPermParity[12,2,1],CycleTalliesWithPermParity[8,3,1]]}]//GatherTallySorted*)
+(*tally3x3x3=CombineOrbitMultiTallies[{*)
+(*{{12,2,0}, {8,3,0}},*)
+(*{{12,2,1},{8,3,1}}*)
+(*}]*)
 
 
 (* ::Input:: *)
@@ -71,7 +75,7 @@ CombineOrbitTallies[t1_,t2_]:=GatherTallySorted[{LCM[#[[1,1]],#[[2,1]]],#[[1,2]]
 
 
 (* ::Input:: *)
-(*tallyMegaminx=Catenate[{CombineOrbitTallies[CycleTalliesWithPermParity[20,3,0],CycleTalliesWithPermParity[30,2,0]]}]//GatherTallySorted;*)
+(*tallyMegaminx=CombineOrbitTallies[{{20,3,0}, {30,2,0}}];*)
 
 
 (* ::Input:: *)
