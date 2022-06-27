@@ -56,12 +56,24 @@ GatherTallySorted[l_]:=SortBy[{#[[1,1]],#[[All,2]]//Total}&/@GatherBy[l,First],F
 
 
 (* ::Input::Initialization:: *)
-CycleTalliesWithPermParity[n_,o_,p_]:=GatherTallySorted[{CyclePatternOrder[n,o][#],NumPositions[n,o][#]}&/@CyclesWithValidOrientationParityAndGivenPermParity[n,o,p]]
+CycleTalliesWithPermParity[n_,o_,p_]:=CycleTalliesWithPermParity[n,o,p]=GatherTallySorted[{CyclePatternOrder[n,o][#],NumPositions[n,o][#]}&/@CyclesWithValidOrientationParityAndGivenPermParity[n,o,p]]
 
 
 (* ::Input::Initialization:: *)
-CombineOrbitTallies[l_]:=GatherTallySorted[{LCM@@#[[All,1]],Times@@#[[All,2]]}&/@Tuples[CycleTalliesWithPermParity@@#&/@l]]
+FoldOrbitTalliesWithCartesianExplosion[l_]:=GatherTallySorted[{LCM@@#[[All,1]],Times@@#[[All,2]]}&/@Tuples[l]]
+CombineOrbitTallies[l_]:=Fold[FoldOrbitTalliesWithCartesianExplosion[{#1,#2}]&,CycleTalliesWithPermParity@@#&/@l]
 CombineOrbitMultiTallies[l_]:=GatherTallySorted@Catenate[CombineOrbitTallies/@l]
+
+
+(* ::Input::Initialization:: *)
+ParityCorrelatedOrbits[l_]:=Table[
+Flatten/@Transpose[{l,parities}],
+{parities,Append[#,Mod[Total[#],2]]&/@Tuples[{0,1},Length[l]-1]}
+]
+
+
+(* ::Input::Initialization:: *)
+CombineOrbitGroups[l_]:=Catenate/@Tuples[l]
 
 
 (* ::Subtitle:: *)
@@ -73,10 +85,9 @@ CombineOrbitMultiTallies[l_]:=GatherTallySorted@Catenate[CombineOrbitTallies/@l]
 
 
 (* ::Input:: *)
-(*tally3x3x3=CombineOrbitMultiTallies[{*)
-(*{{12,2,0}, {8,3,0}},*)
-(*{{12,2,1},{8,3,1}}*)
-(*}]*)
+(*tally3x3x3=CombineOrbitMultiTallies[*)
+(*ParityCorrelatedOrbits[{{12,2},{8,3}}] (* edges, corners *)*)
+(*]*)
 
 
 (* ::Input:: *)
@@ -108,11 +119,10 @@ CombineOrbitMultiTallies[l_]:=GatherTallySorted@Catenate[CombineOrbitTallies/@l]
 
 
 (* ::Input:: *)
-(*tallySuper4x4x4=CombineOrbitMultiTallies[{*)
-(*(* centers, wings, corners *)*)
-(*{{24,1,0},{24,1,Null}, {8,3,0}},*)
-(*{{24,1,1},{24,1,Null}, {8,3,1}}*)
-(*}];*)
+(*tallySuper4x4x4=CombineOrbitMultiTallies[CombineOrbitGroups[{*)
+(*{{{24,1,Null}}}, (* wings *)*)
+(*ParityGroups[{{24,1},{8,3}}] (* centers, corners *)*)
+(*}]];*)
 
 
 (* ::Input:: *)
@@ -122,3 +132,23 @@ CombineOrbitMultiTallies[l_]:=GatherTallySorted@Catenate[CombineOrbitTallies/@l]
 
 (* ::Input:: *)
 (*Export[FileNameJoin[{NotebookDirectory[],"permutation-order-tally-super-4x4x4.csv"}],tallySuper4x4x4]*)
+
+
+(* ::Subsection:: *)
+(*5x5x5 Supercube*)
+
+
+(* ::Input:: *)
+(*tallySuper5x5x5=CombineOrbitMultiTallies[CombineOrbitGroups[{*)
+(*{{{24,1,Null}}}, (* wings *)*)
+(*ParityCorrelatedOrbits[{{12,2},{24,1},{24,1},{8,3}}] (* midges, X-centers, T-centers, corners *)*)
+(*}]];*)
+
+
+(* ::Input:: *)
+(*tallySuper5x5x5[[All,2]]//Total*)
+(*24!*12!*2^11*24!*24!*8!*3^7/2*)
+
+
+(* ::Input:: *)
+(*Export[FileNameJoin[{NotebookDirectory[],"permutation-order-tally-super-5x5x5-stationary-ignored-centers.csv"}],tallySuper5x5x5]*)
