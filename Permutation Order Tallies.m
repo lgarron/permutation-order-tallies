@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-(* ::Subtitle:: *)
+(* ::Title:: *)
 (*Permutation Puzzle Position Order Tallies*)
 
 
@@ -33,6 +33,7 @@ HasValidOrientationParityAndGivenPermParity[o_,p_][c_]:=IsOrientationParityValid
 
 (* ::Input::Initialization:: *)
 CyclesWithValidOrientationParity[n_,o_]:=Select[CyclePatterns[n,o],IsOrientationParityValid[o]]
+CyclesWithValidOrientationParityAndGivenPermParity[n_,o_,Null]:=CyclesWithValidOrientationParity[n,o]
 CyclesWithValidOrientationParityAndGivenPermParity[n_,o_,p_]:=Select[CyclePatterns[n,o],HasValidOrientationParityAndGivenPermParity[o,p]]
 
 
@@ -57,6 +58,10 @@ CycleTalliesWithPermParity[n_,o_,p_]:=GatherTallySorted[{CyclePatternOrder[n,o][
 (* ::Input::Initialization:: *)
 CombineOrbitTallies[l_]:=GatherTallySorted[{LCM@@#[[All,1]],Times@@#[[All,2]]}&/@Tuples[CycleTalliesWithPermParity@@#&/@l]]
 CombineOrbitMultiTallies[l_]:=GatherTallySorted@Catenate[CombineOrbitTallies/@l]
+
+
+(* ::Subtitle:: *)
+(*Puzzles*)
 
 
 (* ::Input:: *)
@@ -84,3 +89,20 @@ CombineOrbitMultiTallies[l_]:=GatherTallySorted@Catenate[CombineOrbitTallies/@l]
 
 (* ::Input:: *)
 (*Export[FileNameJoin[{NotebookDirectory[],"permutation-order-tally-megaminx.csv"}],tallyMegaminx]*)
+
+
+(* ::Input:: *)
+(*tallySuper4x4x4=CombineOrbitMultiTallies[{*)
+(*(* centers, wings, corners *)*)
+(*{{24,1,0},{24,1,Null}, {8,3,0}},*)
+(*{{24,1,1},{24,1,Null}, {8,3,1}}*)
+(*}];*)
+
+
+(* ::Input:: *)
+(*tallySuper4x4x4[[All,2]]//Total*)
+(*24!*8!/2*3^7*24!*)
+
+
+(* ::Input:: *)
+(*Export[FileNameJoin[{NotebookDirectory[],"permutation-order-tally-super-4x4x4.csv"}],tallySuper4x4x4]*)
