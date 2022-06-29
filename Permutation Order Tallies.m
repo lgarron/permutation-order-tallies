@@ -9,7 +9,7 @@
 
 
 (* ::Input::Initialization:: *)
-CyclePossibilities[n_,o_]:=CyclePossibilities[n,o]=Flatten[Table[{i,twist},{i,n},{twist,0,o-1}],1]
+CyclePossibilities[n_,o_]:=CyclePossibilities[n,o]=Catenate[Table[{i,twist},{i,n},{twist,0,o-1}]]
 
 
 (* ::Input::Initialization:: *)
@@ -23,7 +23,7 @@ Take[CyclePossibilities[n,o],Position[CyclePossibilities[n,o],last][[1,1]]]
 
 (* ::Input::Initialization:: *)
 CyclePatterns[0,_,_]={{}};
-CyclePatterns[n_,o_,last_:Null]:=CyclePatterns[n,o,last]=Flatten[Table[Table[Catenate[{{first},rest}],{rest,CyclePatterns[n-first[[1]],o,first]}],{first,CyclePossibilitiesUpToLast[n,o,last]}],1]
+CyclePatterns[n_,o_,last_:Null]:=CyclePatterns[n,o,last]=Catenate[Table[Table[Catenate[{{first},rest}],{rest,CyclePatterns[n-first[[1]],o,first]}],{first,CyclePossibilitiesUpToLast[n,o,last]}]]
 
 
 (* ::Input::Initialization:: *)
@@ -66,14 +66,9 @@ CombineOrbitMultiTallies[l_]:=GatherTallySorted@Catenate[CombineOrbitTallies/@l]
 
 
 (* ::Input::Initialization:: *)
-ParityCorrelatedOrbits[l_]:=Table[
-Flatten/@Transpose[{l,parities}],
-{parities,Append[#,Mod[Total[#],2]]&/@Tuples[{0,1},Length[l]-1]}
-]
-
-
-(* ::Input::Initialization:: *)
-CombineOrbitGroups[l_]:=Catenate/@Tuples[l]
+AddOrbit[l__List,{n_Integer,o_Integer}]:=Flatten[Table[Append[s,{n,o,p}],{p,0,1},{s,l}],1]
+AddOrbit[l_List,{n_Integer,o_Integer,xorOf_List}]:=Table[Append[s,{n,o,BitXor@@s[[xorOf,-1]]}],{s,l}]
+CalculateOrders[l_List]:=GatherTallySorted@CombineOrbitMultiTallies[Fold[AddOrbit,{{}},l]]
 
 
 (* ::Subtitle:: *)
@@ -85,9 +80,10 @@ CombineOrbitGroups[l_]:=Catenate/@Tuples[l]
 
 
 (* ::Input:: *)
-(*tally3x3x3=CombineOrbitMultiTallies[*)
-(*ParityCorrelatedOrbits[{{12,2},{8,3}}] (* edges, corners *)*)
-(*]*)
+(*tally3x3x3=CalculateOrders[{*)
+(*{8,3}, (* corners*)*)
+(*{12,2,{1}} (* edges *)*)
+(*}];*)
 
 
 (* ::Input:: *)
@@ -95,7 +91,30 @@ CombineOrbitGroups[l_]:=Catenate/@Tuples[l]
 
 
 (* ::Input:: *)
-(*Export[FileNameJoin[{NotebookDirectory[],"permutation-order-tally-3x3x3.csv"}],tally3x3x3]*)
+(*Export[FileNameJoin[{NotebookDirectory[],"permutation-order-tally-3x3x3-fixed-centers.csv"}],tally3x3x3]*)
+
+
+(* ::Subsection:: *)
+(*3x3x3 with centers*)
+
+
+(* ::Input:: *)
+(*tally3x3x3WithCenters=CalculateOrders[{*)
+(*{8,3}, (* corners*)*)
+(*{12,2}, (* edges *)*)
+(*{4,1,{1,2}} (* centers (using diagonals) *)*)
+(*}];*)
+
+
+tally3x3x3WithCenters
+
+
+(* ::Input:: *)
+(*tally3x3x3WithCenters[[All,2]]//Total*)
+
+
+(* ::Input:: *)
+(*Export[FileNameJoin[{NotebookDirectory[],"permutation-order-tally-3x3x3-moving-unoriented-centers.csv"}],tally3x3x3WithCenters]*)
 
 
 (* ::Subsection:: *)
@@ -103,7 +122,10 @@ CombineOrbitGroups[l_]:=Catenate/@Tuples[l]
 
 
 (* ::Input:: *)
-(*tallyMegaminx=CombineOrbitTallies[{{20,3,0}, {30,2,0}}];*)
+(*tallyMegaminx=CalculateOrders[{*)
+(*{20,3}, (* corners*)*)
+(*{30,2,{1}} (* edges *)*)
+(*}]*)
 
 
 (* ::Input:: *)
@@ -119,10 +141,11 @@ CombineOrbitGroups[l_]:=Catenate/@Tuples[l]
 
 
 (* ::Input:: *)
-(*tallySuper4x4x4=CombineOrbitMultiTallies[CombineOrbitGroups[{*)
-(*{{{24,1,Null}}}, (* wings *)*)
-(*ParityGroups[{{24,1},{8,3}}] (* centers, corners *)*)
-(*}]];*)
+(*tallySuper4x4x4=CalculateOrders[{*)
+(*{8,3}, (* corners*)*)
+(*{24,1,{1}}, (* X-centers *)*)
+(*{24,1} (* wings *)*)
+(*}];*)
 
 
 (* ::Input:: *)
@@ -135,19 +158,23 @@ CombineOrbitGroups[l_]:=Catenate/@Tuples[l]
 
 
 (* ::Subsection:: *)
-(*5x5x5 Supercube*)
+(*5x5x5 Supercube (stationary ignored centers)*)
 
 
 (* ::Input:: *)
-(*tallySuper5x5x5=CombineOrbitMultiTallies[CombineOrbitGroups[{*)
-(*{{{24,1,Null}}}, (* wings *)*)
-(*ParityCorrelatedOrbits[{{12,2},{24,1},{24,1},{8,3}}] (* midges, X-centers, T-centers, corners *)*)
-(*}]];*)
+(*tallySuper5x5x5=CalculateOrders[{*)
+(*{8,3}, (* corners*)*)
+(*{12,2,{1}}, (* midges *)*)
+(*{24,1,{1}}, (* X-centers *)*)
+(*{24,1}, (* wings *)*)
+(*{24,1,{1,2,3,4}} (* T-centers *)*)
+(*}];*)
 
 
 (* ::Input:: *)
 (*tallySuper5x5x5[[All,2]]//Total*)
-(*24!*12!*2^11*24!*24!*8!*3^7/2*)
+(*24!*12!*2^11*24!*24!*8!*3^7/8*)
+(*(WeightedData@@Transpose[tallySuper5x5x5])//Mean//N*)
 
 
 (* ::Input:: *)
