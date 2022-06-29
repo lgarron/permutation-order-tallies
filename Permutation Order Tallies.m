@@ -67,8 +67,14 @@ CombineOrbitMultiTallies[l_]:=GatherTallySorted@Catenate[CombineOrbitTallies/@l]
 
 (* ::Input::Initialization:: *)
 AddOrbit[l__List,{n_Integer,o_Integer}]:=Flatten[Table[Append[s,{n,o,p}],{p,0,1},{s,l}],1]
+AddOrbit[l_List,{n_Integer,o_Integer,p_Integer}]:=Table[Append[s,{n,o,p}],{s,l}]
 AddOrbit[l_List,{n_Integer,o_Integer,xorOf_List}]:=Table[Append[s,{n,o,BitXor@@s[[xorOf,-1]]}],{s,l}]
-CalculateOrders[l_List]:=GatherTallySorted@CombineOrbitMultiTallies[Fold[AddOrbit,{{}},l]]
+CalculateOrbits[l_List]:=Fold[AddOrbit,{{}},l]
+CalculateOrders[l_List]:=CombineOrbitMultiTallies[CalculateOrbits[l]]
+
+
+(* ::Input::Initialization:: *)
+WeightedMean[l_List]:=(WeightedData@@Transpose[l])//Mean//N
 
 
 (* ::Subtitle:: *)
@@ -88,6 +94,7 @@ CalculateOrders[l_List]:=GatherTallySorted@CombineOrbitMultiTallies[Fold[AddOrbi
 
 (* ::Input:: *)
 (*tally3x3x3[[All,2]]//Total*)
+(*WeightedMean@tally3x3x3*)
 
 
 (* ::Input:: *)
@@ -106,11 +113,9 @@ CalculateOrders[l_List]:=GatherTallySorted@CombineOrbitMultiTallies[Fold[AddOrbi
 (*}];*)
 
 
-tally3x3x3WithCenters
-
-
 (* ::Input:: *)
 (*tally3x3x3WithCenters[[All,2]]//Total*)
+(*WeightedMean@tally3x3x3WithCenters*)
 
 
 (* ::Input:: *)
@@ -123,13 +128,14 @@ tally3x3x3WithCenters
 
 (* ::Input:: *)
 (*tallyMegaminx=CalculateOrders[{*)
-(*{20,3}, (* corners*)*)
-(*{30,2,{1}} (* edges *)*)
-(*}]*)
+(*{20,3,0}, (* corners*)*)
+(*{30,2,0} (* edges *)*)
+(*}];*)
 
 
 (* ::Input:: *)
 (*tallyMegaminx[[All,2]]//Total*)
+(*(WeightedData@@Transpose[tallyMegaminx])//Mean//N*)
 
 
 (* ::Input:: *)
@@ -151,6 +157,7 @@ tally3x3x3WithCenters
 (* ::Input:: *)
 (*tallySuper4x4x4[[All,2]]//Total*)
 (*24!*8!/2*3^7*24!*)
+(*WeightedMean@tallySuper4x4x4*)
 
 
 (* ::Input:: *)
@@ -174,8 +181,51 @@ tally3x3x3WithCenters
 (* ::Input:: *)
 (*tallySuper5x5x5[[All,2]]//Total*)
 (*24!*12!*2^11*24!*24!*8!*3^7/8*)
-(*(WeightedData@@Transpose[tallySuper5x5x5])//Mean//N*)
+(*WeightedMean@tallySuper5x5x5*)
 
 
 (* ::Input:: *)
 (*Export[FileNameJoin[{NotebookDirectory[],"permutation-order-tally-super-5x5x5-stationary-ignored-centers.csv"}],tallySuper5x5x5]*)
+
+
+(* ::Subsection:: *)
+(*NxNxN Supercube (stationary ignored centers for odd N)*)
+
+
+(* ::Input:: *)
+(*orbitsNxNxN[n_]:=Module[{l={},numWings=Floor[n/2-1],cornerIdx},*)
+(*	l=Catenate[{l,*)
+(*		Table[{24,1},{numWings}] (* wings *)*)
+(*	}];*)
+(*	AppendTo[l,{8,3}]; (* corner *)*)
+(*	cornerIdx=numWings+1;*)
+(*	l=Catenate[{l,*)
+(*		Catenate@Table[*)
+(*			If[*)
+(*				i==j,*)
+(*				{24,1,{cornerIdx}}, (* X-centers *)*)
+(*				{24,1,{cornerIdx,i,j}} (* Oblique centers *)*)
+(*			]*)
+(*		,{i,numWings},{j,numWings}]*)
+(*	}];*)
+(*	If[OddQ[n],*)
+(*		AppendTo[l,{12,2,{cornerIdx}}]; (* midge *)*)
+(*		l=Catenate[{l,*)
+(*			Table[*)
+(*				{24,1,{cornerIdx,i}} (* T-centers *)*)
+(*			,{i,numWings}]*)
+(*		}];*)
+(*	];*)
+(*	l*)
+(*]*)
+
+
+(* ::Input:: *)
+(*CalculateOrders[orbitsNxNxN[3]]==tally3x3x3*)
+(*CalculateOrders[orbitsNxNxN[4]]==tallySuper4x4x4*)
+(*CalculateOrders[orbitsNxNxN[5]]==tallySuper5x5x5*)
+
+
+Table[
+WeightedMean@CalculateOrders[orbitsNxNxN[n]]
+,{n,2,7}]
